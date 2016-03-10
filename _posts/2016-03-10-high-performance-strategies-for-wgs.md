@@ -10,11 +10,11 @@ image:
 ## Handle gzip format
 
 1. Using pigz to replace gzip  
-{% highlight bash %}
+    {% highlight bash %}
 pigz -cd -p4 R1.fastq.gz > R1.fastq && pigz -cd -p4 R2.fastq.gz > R2.fastq && cat R1.fastq R2.fastq |pigz -c -p4 >R_cat.fastq.gz
 {% endhighlight %}
 2. More faster way(zlib example目录下有个gzjoin 可方便合并两个gz格式文件，无需先解压，再合并压缩)  
-{% highlight bash %}
+    {% highlight bash %}
 gzjoin R1.fastq.gz R2.fastq.gz >R_join.fastq.gz
 {% endhighlight %}
 
