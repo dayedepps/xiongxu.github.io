@@ -9,8 +9,8 @@ image:
 
 ## Handle gzip format
 
-1.Using pigz to replace gzip 
-2.More faster way(zlib example目录下有个gzjoin 可方便合并两个gz格式文件，无需先解压，再合并压缩) 
+1. Using pigz to replace gzip  
+2. More faster way(zlib example目录下有个gzjoin 可方便合并两个gz格式文件，无需先解压，再合并压缩)  
 {% highlight bash %}
 pigz -cd -p4 R1.fastq.gz > R1.fastq && pigz -cd -p4 R2.fastq.gz > R2.fastq && cat R1.fastq R2.fastq |pigz -c -p4 >R_cat.fastq.gz
 gzjoin R1.fastq.gz R2.fastq.gz >R_join.fastq.gz
@@ -34,7 +34,7 @@ In this way, we can save the time of loading index if we would submit bwa mappin
 
 ## Working on a stream
 
-You can output SAM/BAM to the standard houtput (stdout) and pipe it to a SAMtools command via standard input (stdin) without generating a temporary file. 
+You can output SAM/BAM to the standard houtput (stdout) and pipe it to a SAMtools command via standard input (stdin) without generating a temporary file.  
 {% highlight bash %} 
 samtools view -u -S - | samtools sort –l 0 -m 4G - $outfile_prefix.sort 
 {% endhighlight %}
