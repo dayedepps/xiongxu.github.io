@@ -9,22 +9,23 @@ image:
 
 ## Handle gzip format
 1. Using pigz to replace gzip
-{% highlight bash %}
-pigz -cd -p4 R1.fastq.gz > R1.fastq && pigz -cd -p4 R2.fastq.gz > R2.fastq && cat R1.fastq R2.fastq |pigz -c -p4 >R_cat.fastq.gz
-{% endhighlight %}
+	{% highlight bash %}
+	pigz -cd -p4 R1.fastq.gz > R1.fastq && pigz -cd -p4 R2.fastq.gz > R2.fastq && cat R1.fastq R2.fastq |pigz -c -p4 >R_cat.fastq.gz
+	{% endhighlight %}
 
 2. More faster way(zlib example目录下有个gzjoin 可方便合并两个gz格式文件，无需先解压，再合并压缩)
-{% highlight bash %}
-gzjoin R1.fastq.gz R2.fastq.gz >R_join.fastq.gz
-{% endhighlight %}
+	{% highlight bash %}
+	gzjoin R1.fastq.gz R2.fastq.gz >R_join.fastq.gz
+	{% endhighlight %}
 
-## trace to its source([bcl2fastq](http://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-17-software-guide-15051736-g.pdf))
+## Trace to its source([bcl2fastq](http://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-17-software-guide-15051736-g.pdf))
 
 FASTQ files are saved in the compressed GNU zip format (an open source file compression program), indicated by the .gz file extension. By default, the BGZF variant of the GNU zip format is used. The BGZF variant facilitates parallel decompression of the FASTQ files by downstream applications. While BGZF is compliant with the GNU zip standard, if a downstream application cannot handle this variant, it can be turned off with the command line option --no-bgzf-compression.
 
 ## Pre-processing
 
 The most fast tools(Both support multithread)  
+
 1. Trimmomatic using a Palindrome mode to identify adapter for pair end reads. Then using simple mode to do this.
 2. Flexbar using dynamic programming to identify adapter
 
@@ -36,35 +37,35 @@ In this way, we can save the time of loading index if we would submit bwa mappin
 ## Working on a stream
 
 You can output SAM/BAM to the standard houtput (stdout) and pipe it to a SAMtools command via standard input (stdin) without generating a temporary file. 
-{% highlight bash %} 
-samtools view -u -S - | samtools sort –l 0 -m 4G - $outfile_prefix.sort 
-{% endhighlight %}
+	{% highlight bash %} 
+	samtools view -u -S - | samtools sort –l 0 -m 4G - $outfile_prefix.sort 
+	{% endhighlight %}
 
 ## Using uncompressed bam for temp bam file
 
 In this way, we can save the time for reading and writing bam files, the utilities do not need to compress or decompress the bgzf file in substance while with more disk cost.  
-{% highlight bash %} 
-samtools view –u –S
-samtools sort –l 0
-{% endhighlight %}
+	{% highlight bash %} 
+	samtools view –u –S
+	samtools sort –l 0
+	{% endhighlight %}
 
 ## Using samtools cat to concatenate multiple sorted chromosomal bam files as the order in the sam header
-{% highlight bash %} 
-samtools cat –o chr1_chr2.bam chr1.sort.bam chr2.sort.bam
-{% endhighlight %}
+	{% highlight bash %} 
+	samtools cat –o chr1_chr2.bam chr1.sort.bam chr2.sort.bam
+	{% endhighlight %}
 
 ## Less writing temp file into disk(less PrintReads)
 
 Make BQSR and call variant in a single command line.  
-{% highlight python %} 
-Process('java', '-Xmx24g', '-Djava.io.tmpdir=/tmp', '-jar', '/opt/bin/GenomeAnalysisTK-3.2-2.jar', '-R', '/opt/db/ucsc.hg19.fasta', '-et', 'NO_ET', '-K', '/opt/db/rbluo_cs.hku.hk.key', '-T', 'UnifiedGenotyper', '-I', bam0, '-I', bam1, '-I', bam2, '-I', bam3, '-I', bam4, '-I', bam5, '-BQSR', self.inputs.dedup_realn_bam_grp, '--dbsnp', '/opt/db/dbsnp_138.hg19.vcf', '-o', out_file_name, '-stand_call_conf', self.params.stand_call_conf, '-stand_emit_conf', self.params.stand_emit_conf, '-dcov', self.params.dcov, '-nt', '12', '-nct', '1', '-glm', 'BOTH', '-A', 'AlleleBalance', '-A', 'HomopolymerRun', '-l', 'INFO', '--max_alternate_alleles', self.params.max_alternate_alleles, '-baqGOP', '30').run() 
-{% endhighlight %}
+	{% highlight python %} 
+	Process('java', '-Xmx24g', '-Djava.io.tmpdir=/tmp', '-jar', '/opt/bin/GenomeAnalysisTK-3.2-2.jar', '-R', '/opt/db/ucsc.hg19.fasta', '-et', 'NO_ET', '-K', '/opt/db/rbluo_cs.hku.hk.key', '-T', 'UnifiedGenotyper', '-I', bam0, '-I', bam1, '-I', bam2, '-I', bam3, '-I', bam4, '-I', bam5, '-BQSR', self.inputs.dedup_realn_bam_grp, '--dbsnp', '/opt/db/dbsnp_138.hg19.vcf', '-o', out_file_name, '-stand_call_conf', self.params.stand_call_conf, '-stand_emit_conf', self.params.stand_emit_conf, '-dcov', self.params.dcov, '-nt', '12', '-nct', '1', '-glm', 'BOTH', '-A', 'AlleleBalance', '-A', 'HomopolymerRun', '-l', 'INFO', '--max_alternate_alleles', self.params.max_alternate_alleles, '-baqGOP', '30').run() 
+	{% endhighlight %}
 
 ## Using multiple threads in every command
-{% highlight perl %} 
-$flexbarExe -n $threadNum -at 2 -u 1 -m 20 -ao 5 -f i1.8 -a $outdir/L1/clean/$prefix\_adaptor.fa --reads $read1[0] --reads2 $read2[0] -z GZ -t clean/$prefix >clean/$prefix.flexbar.log
-bwa mem –M -Y  -t $thread –R ‘@RG\tID:$outfile_prefix.sam\tPL:ILLUMINA\tSM:$outfile_prefix.sam\tDS:ref=$ref,pfx=$index_prefix' -p $index_prefix $indir/$fastq1 $indir/$fastq2
-{% endhighlight %}
+	{% highlight perl %} 
+	$flexbarExe -n $threadNum -at 2 -u 1 -m 20 -ao 5 -f i1.8 -a $outdir/L1/clean/$prefix\_adaptor.fa --reads $read1[0] --reads2 $read2[0] -z GZ -t clean/$prefix >clean/$prefix.flexbar.log
+	bwa mem –M -Y  -t $thread –R ‘@RG\tID:$outfile_prefix.sam\tPL:ILLUMINA\tSM:$outfile_prefix.sam\tDS:ref=$ref,pfx=$index_prefix' -p $index_prefix $indir/$fastq1 $indir/$fastq2
+	{% endhighlight %}
 
 ## Using more fast tools
 
