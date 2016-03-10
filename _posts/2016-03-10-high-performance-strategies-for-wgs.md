@@ -34,7 +34,7 @@ In this way, we can save the time of loading index if we would submit bwa mappin
 
 ## Working on a stream
 
-You can output SAM/BAM to the standard output (stdout) and pipe it to a SAMtools command via standard input (stdin) without generating a temporary file. 
+You can output SAM/BAM to the standard houtput (stdout) and pipe it to a SAMtools command via standard input (stdin) without generating a temporary file. 
 {% highlight bash %} 
 samtools view -u -S - | samtools sort –l 0 -m 4G - $outfile_prefix.sort 
 {% endhighlight %}
