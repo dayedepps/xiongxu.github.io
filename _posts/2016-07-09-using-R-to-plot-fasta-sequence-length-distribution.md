@@ -137,4 +137,5 @@ Rscript stat_fasta_len.R test.fa ./ test 10
 {% capture images %}
     /images/test_len.png
 {% endcapture %}
+{% include gallery images=images caption="fasta length distribution" cols=1 %}
 
