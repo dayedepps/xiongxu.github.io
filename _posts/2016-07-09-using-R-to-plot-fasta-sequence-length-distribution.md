@@ -133,3 +133,8 @@ print(proc.time() - ptm)
 {% highlight bash %}
 Rscript stat_fasta_len.R test.fa ./ test 10
 {% endhighlight bash %}
+
+{% capture images %}
+    /images/test_len.png
+{% endcapture %}
+
