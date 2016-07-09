@@ -128,7 +128,7 @@ draw_length_distribution(outfile,Length,Breaks)
 print(proc.time() - ptm)
 {% endhighlight r %}
 
-###运行命令：
+运行命令：
 
 {% highlight bash %}
 Rscript stat_fasta_len.R test.fa ./ test 10
