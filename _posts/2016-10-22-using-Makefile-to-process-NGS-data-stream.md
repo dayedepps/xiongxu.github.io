@@ -11,17 +11,17 @@ image:
  
 1. 自动检查目标文件或源文件是否存在，如没有找到已有的源文件则退出make过程，如已找到目标文件则跳过此make步骤
 2. 自动检查目标文件或源文件的变更，如果源文件经过修改则重新生成对应的目标文件
-3. 易于多进程并行运行多个任务	  
-   {% highlight bash %}
-make –j $processNumber
-   {% endhighlight bash %}
+3. 易于多进程并行运行多个任务 
+    {% highlight bash %}
+    make –j $processNumber
+    {% endhighlight bash %}
 4. 能表达复杂的数据流程  
 	* 互不依赖的平行运行的多个进程数据流
 	* 多个数据流汇聚成一个
 	* 一个进程分出多个数据流
 	* 复杂的网状数据流
 5. 可用于一键部署软件，如安装perl/python/R包,或其他命令行软件    
-   {% highlight makefile %}
+    {% highlight makefile %}
 OBJECTS = $(INSTALL_DIR)/lib/perl5/SVG \
           $(INSTALL_DIR)/lib/perl5/x86_64-linux-gnu-thread-multi/GD.pm \
           $(INSTALL_DIR)/lib/perl5/Parallel/ForkManager.pm \
@@ -120,22 +120,21 @@ clean:
    {% endhighlight makefile %}
 6. 便于模块化，清晰的流程逻辑    
 7. 可结合PBS/SGE，用于集群网格计算    
-   {% highlight makefile %}
-define FastQC
-$1_fastqc.zip \$1_fastqc.html : $1.qc.intermediate
-.INTERMEDIATE:$1.qc.intermediate
-$1.qc.intermediate:$indir/\$2
-	cd $(OD) && \
-	echo "cd $(OD) && fastqc -o ./ --extract -f fastq -t 8 -q $indir/\$2 "\
-	> $(OD)/$1.qc.sh && \
-	qsub -cwd -sync y -q all.q -l ncpu 8 $1.qc.sh
-endef
-	
-$(eval $(call FastQC,fastq1_Prefix,fastq1.fastq.gz))
-$(eval $(call FastQC,fastq2_Prefix,fastq2.fastq.gz))
-   {% endhighlight makefile %}
-	
-   {% highlight bash %}
-make -j 2 -f Fastqc.make
-   {% endhighlight bash %}
+    {% highlight makefile %}
+    define FastQC
+    $1_fastqc.zip \$1_fastqc.html : $1.qc.intermediate
+    .INTERMEDIATE:$1.qc.intermediate
+    $1.qc.intermediate:$indir/\$2
+    	cd $(OD) && \
+    	echo "cd $(OD) && fastqc -o ./ --extract -f fastq -t 8 -q $indir/\$2 "\
+    	> $(OD)/$1.qc.sh && \
+    	qsub -cwd -sync y -q all.q -l ncpu 8 $1.qc.sh
+    endef
+    
+    $(eval $(call FastQC,fastq1_Prefix,fastq1.fastq.gz))
+    $(eval $(call FastQC,fastq2_Prefix,fastq2.fastq.gz))
+    {% endhighlight makefile %}
+    {% highlight bash %}
+    make -j 2 -f Fastqc.make
+    {% endhighlight bash %}
 	
