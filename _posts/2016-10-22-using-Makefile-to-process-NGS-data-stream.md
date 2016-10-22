@@ -15,7 +15,7 @@ image:
 
 3. 易于多进程并行运行多个任务
  
-{% highlight bash %}
+	{% highlight bash %}
 make –j $processNumber
 {% endhighlight bash %}
 
@@ -27,7 +27,7 @@ make –j $processNumber
 
 5. 可用于一键部署软件，如安装perl/python/R包,或其他命令行软件
     
-{% highlight makefile %}
+	{% highlight makefile %}
 OBJECTS = $(INSTALL_DIR)/lib/perl5/SVG \
           $(INSTALL_DIR)/lib/perl5/x86_64-linux-gnu-thread-multi/GD.pm \
           $(INSTALL_DIR)/lib/perl5/Parallel/ForkManager.pm \
@@ -129,7 +129,7 @@ clean:
  
 7. 可结合PBS/SGE，用于集群网格计算    
 
-{% highlight makefile %}
+	{% highlight makefile %}
 define FastQC
 $1_fastqc.zip \$1_fastqc.html : $1.qc.intermediate
 .INTERMEDIATE:$1.qc.intermediate
